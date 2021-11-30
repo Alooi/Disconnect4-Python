@@ -11,10 +11,97 @@ YELLOW = (255,255,0)
 
 ROW_COUNT = 6
 COLUMN_COUNT = 7
+PLAYER_1_SCORE = 0
+PLAYER_2_SCORE = 0
 
 def create_board():
 	board = np.zeros((ROW_COUNT,COLUMN_COUNT))
 	return board
+
+def calculate_score(board, row, col, piece, player):
+	c, r = col+1, row+1
+	max_k = 0
+	k = 0
+	# check diagonal
+	while c < COLUMN_COUNT and r < ROW_COUNT:
+		if board[r][c] == piece:
+			k += 1
+		else:
+			break
+		c += 1
+		r += 1
+	c, r = col-1, row-1
+	while c >= 0 and r >= 0:
+		if board[r][c] == piece:
+			k += 1
+		else:
+			if k > max_k:
+				max_k = k
+			break
+		c -= 1
+		r -= 1
+	c, r = col+1, row-1
+	k = 0
+	while c < COLUMN_COUNT and r >= 0:
+		if board[r][c] == piece:
+			k += 1
+		else:
+			break
+		c += 1
+		r -= 1
+	c, r = col-1, row+1
+	while c >= 0 and r < ROW_COUNT:
+		if board[r][c] == piece:
+			k += 1
+		else:
+			if k > max_k:
+				max_k = k
+			break
+		c -= 1
+		r += 1
+	print('diagonal score', k)
+	#check horizontal
+	c, r = col+1, row
+	k = 0
+	while c < COLUMN_COUNT:
+		if board[r][c] == piece:
+			k += 1
+		else:
+			break
+		c += 1
+	c, r = col-1, row
+	while c >= 0:
+		if board[r][c] == piece:
+			k += 1
+		else:
+			if k > max_k:
+				max_k = k
+			break
+		c -= 1
+	print('horizontal score', k)
+	print('horizontal score MAX', max_k)
+	#check vertical 
+	c, r = col, row-1
+	k = 0
+	while r < ROW_COUNT:
+		print('checking position', r,c)
+		if board[r][c] == piece:
+			k += 1
+		else:
+			if k > max_k:
+				max_k = k
+			break
+		r -= 1
+	max_k += 1
+	print('vertical score', k)
+	print('play score:', max_k)
+	return max_k
+
+def add_score(score, player):
+	if player == 1:
+		PLAYER_1_SCORE += score
+	else:
+		PLAYER_2_SCORE += score
 
 def drop_piece(board, row, col, piece):
 	board[row][col] = piece
@@ -24,10 +111,11 @@ def take_piece(board, col, player):
 	piece = 0
 	while row >= 0:
 		if board[row][col] != 0:
-			piece = board[row][col]
+			piece = int(board[row][col])
 			board[row][col] = 0
-			print('removed a piece from', row, col)
+			print('removed piece', piece ,'from', row, col)
 			# TODO calculate score here, using (player, piece, row, col). That is all information needed for score
+			calculate_score(board, row, col, piece, player)
 			break
 		row -= 1
 
@@ -86,8 +174,6 @@ board = create_board()
 print_board(board)
 game_over = False
 turn = 0
-
-# User defined funtions
 
 def fill_board(board):
 	turn = 0
