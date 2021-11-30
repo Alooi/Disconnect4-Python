@@ -1,3 +1,4 @@
+from random import randint
 import numpy as np
 import pygame
 import sys
@@ -74,6 +75,24 @@ print_board(board)
 game_over = False
 turn = 0
 
+# User defined funtions
+
+def fill_board(board):
+	turn = 0
+	pieces = 0
+	board_size = COLUMN_COUNT * ROW_COUNT
+	while pieces != board_size:	
+		turn += 1
+		col = randint(0,COLUMN_COUNT-1)
+		if is_valid_location(board, col):
+			row = get_next_open_row(board, col)
+			drop_piece(board, row, col, turn)
+			pieces += 1
+		turn -= 1
+		turn += 1
+		turn = turn % 2
+
+fill_board(board)
 pygame.init()
 
 SQUARESIZE = 100
