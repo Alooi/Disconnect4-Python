@@ -111,13 +111,29 @@ def calculate_score(board, row, col, piece, player):
 	max_k += 1
 	print('vertical score', k+1)
 	print('play score:', max_k)
+	add_score(max_k, player, piece)
 	return max_k
 
-def add_score(score, player):
+def add_score(score, player, piece):
+	global PLAYER_1_SCORE
+	global PLAYER_2_SCORE
+
 	if player == 1:
-		PLAYER_1_SCORE += score
+		if piece == player:
+			PLAYER_1_SCORE += 1
+			PLAYER_2_SCORE -= 1
+		else:
+			PLAYER_1_SCORE += score
+			PLAYER_2_SCORE -= score
 	else:
-		PLAYER_2_SCORE += score
+		if piece == player:
+			PLAYER_2_SCORE += 1
+			PLAYER_1_SCORE -= 1
+		else:
+			PLAYER_2_SCORE += score
+			PLAYER_1_SCORE -= score
+	print('player1 total score: ', PLAYER_1_SCORE)
+	print('player2 total score: ', PLAYER_2_SCORE)
 
 def drop_piece(board, row, col, piece):
 	board[row][col] = piece
