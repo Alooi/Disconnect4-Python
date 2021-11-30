@@ -19,6 +19,18 @@ def create_board():
 def drop_piece(board, row, col, piece):
 	board[row][col] = piece
 
+def take_piece(board, col, player):
+	row = ROW_COUNT -1
+	piece = 0
+	while row >= 0:
+		if board[row][col] != 0:
+			piece = board[row][col]
+			board[row][col] = 0
+			print('removed a piece from', row, col)
+			# TODO calculate score here, using (player, piece, row, col). That is all information needed for score
+			break
+		row -= 1
+
 def is_valid_location(board, col):
 	return board[ROW_COUNT-1][col] == 0
 
@@ -133,14 +145,15 @@ while not game_over:
 				posx = event.pos[0]
 				col = int(math.floor(posx/SQUARESIZE))
 
-				if is_valid_location(board, col):
-					row = get_next_open_row(board, col)
-					drop_piece(board, row, col, 1)
+				# if is_valid_location(board, col):
+				# 	row = get_next_open_row(board, col)
+				# 	drop_piece(board, row, col, 1)
+				take_piece(board, col, 1)
 
-					if winning_move(board, 1):
-						label = myfont.render("Player 1 wins!!", 1, RED)
-						screen.blit(label, (40,10))
-						game_over = True
+					# if winning_move(board, 1):
+					# 	label = myfont.render("Player 1 wins!!", 1, RED)
+					# 	screen.blit(label, (40,10))
+					# 	game_over = True
 
 
 			# # Ask for Player 2 Input
@@ -148,14 +161,15 @@ while not game_over:
 				posx = event.pos[0]
 				col = int(math.floor(posx/SQUARESIZE))
 
-				if is_valid_location(board, col):
-					row = get_next_open_row(board, col)
-					drop_piece(board, row, col, 2)
+				# if is_valid_location(board, col):
+				# 	row = get_next_open_row(board, col)
+				# 	drop_piece(board, row, col, piece)
+				take_piece(board, col, 2)
 
-					if winning_move(board, 2):
-						label = myfont.render("Player 2 wins!!", 1, YELLOW)
-						screen.blit(label, (40,10))
-						game_over = True
+					# if winning_move(board, 2):
+					# 	label = myfont.render("Player 2 wins!!", 1, YELLOW)
+					# 	screen.blit(label, (40,10))
+					# 	game_over = True
 
 			print_board(board)
 			draw_board(board)
