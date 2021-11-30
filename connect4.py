@@ -26,6 +26,8 @@ def calculate_score(board, row, col, piece, player):
 	while c < COLUMN_COUNT and r < ROW_COUNT:
 		if board[r][c] == piece:
 			k += 1
+			if k > max_k:
+				max_k = k
 		else:
 			break
 		c += 1
@@ -34,6 +36,8 @@ def calculate_score(board, row, col, piece, player):
 	while c >= 0 and r >= 0:
 		if board[r][c] == piece:
 			k += 1
+			if k > max_k:
+				max_k = k
 		else:
 			if k > max_k:
 				max_k = k
@@ -45,7 +49,11 @@ def calculate_score(board, row, col, piece, player):
 	while c < COLUMN_COUNT and r >= 0:
 		if board[r][c] == piece:
 			k += 1
+			if k > max_k:
+				max_k = k
 		else:
+			if k > max_k:
+				max_k = k
 			break
 		c += 1
 		r -= 1
@@ -53,47 +61,55 @@ def calculate_score(board, row, col, piece, player):
 	while c >= 0 and r < ROW_COUNT:
 		if board[r][c] == piece:
 			k += 1
+			if k > max_k:
+				max_k = k
 		else:
 			if k > max_k:
 				max_k = k
 			break
 		c -= 1
 		r += 1
-	print('diagonal score', k)
+	print('diagonal score', k+1)
 	#check horizontal
 	c, r = col+1, row
 	k = 0
 	while c < COLUMN_COUNT:
 		if board[r][c] == piece:
 			k += 1
+			if k > max_k:
+				max_k = k
 		else:
+			if k > max_k:
+				max_k = k
 			break
 		c += 1
 	c, r = col-1, row
 	while c >= 0:
 		if board[r][c] == piece:
 			k += 1
+			if k > max_k:
+				max_k = k
 		else:
 			if k > max_k:
 				max_k = k
 			break
 		c -= 1
-	print('horizontal score', k)
-	print('horizontal score MAX', max_k)
+	print('horizontal score', k+1)
 	#check vertical 
 	c, r = col, row-1
 	k = 0
 	while r < ROW_COUNT:
-		print('checking position', r,c)
 		if board[r][c] == piece:
 			k += 1
+			if k > max_k:
+				max_k = k
 		else:
 			if k > max_k:
 				max_k = k
 			break
 		r -= 1
 	max_k += 1
-	print('vertical score', k)
+	print('vertical score', k+1)
 	print('play score:', max_k)
 	return max_k
 
@@ -130,30 +146,6 @@ def get_next_open_row(board, col):
 def print_board(board):
 	print(np.flip(board, 0))
 
-def winning_move(board, piece):
-	# Check horizontal locations for win
-	for c in range(COLUMN_COUNT-3):
-		for r in range(ROW_COUNT):
-			if board[r][c] == piece and board[r][c+1] == piece and board[r][c+2] == piece and board[r][c+3] == piece:
-				return True
-
-	# Check vertical locations for win
-	for c in range(COLUMN_COUNT):
-		for r in range(ROW_COUNT-3):
-			if board[r][c] == piece and board[r+1][c] == piece and board[r+2][c] == piece and board[r+3][c] == piece:
-				return True
-
-	# Check positively sloped diaganols
-	for c in range(COLUMN_COUNT-3):
-		for r in range(ROW_COUNT-3):
-			if board[r][c] == piece and board[r+1][c+1] == piece and board[r+2][c+2] == piece and board[r+3][c+3] == piece:
-				return True
-
-	# Check negatively sloped diaganols
-	for c in range(COLUMN_COUNT-3):
-		for r in range(3, ROW_COUNT):
-			if board[r][c] == piece and board[r-1][c+1] == piece and board[r-2][c+2] == piece and board[r-3][c+3] == piece:
-				return True
 
 def draw_board(board):
 	for c in range(COLUMN_COUNT):
@@ -208,6 +200,8 @@ pygame.display.update()
 
 myfont = pygame.font.SysFont("monospace", 75)
 
+
+# We can ignore most of the code below if we were to make both players play automatically, this part of the code is mostly visual for actually playing the game.
 while not game_over:
 
 	for event in pygame.event.get():
