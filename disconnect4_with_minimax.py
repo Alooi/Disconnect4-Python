@@ -30,6 +30,7 @@ def create_board():
 	return board
 
 def calculate_score(board, row, col, piece, player):
+	# print('got passed: ', col, row)
 	c, r = col+1, row+1
 	max_k = 0
 	k = 0
@@ -80,7 +81,7 @@ def calculate_score(board, row, col, piece, player):
 			break
 		c -= 1
 		r += 1
-	print('diagonal score', k+1)
+	# print('diagonal score', k+1)
 	#check horizontal
 	c, r = col+1, row
 	k = 0
@@ -105,7 +106,7 @@ def calculate_score(board, row, col, piece, player):
 				max_k = k
 			break
 		c -= 1
-	print('horizontal score', k+1)
+	# print('horizontal score', k+1)
 	#check vertical 
 	c, r = col, row-1
 	k = 0
@@ -120,8 +121,8 @@ def calculate_score(board, row, col, piece, player):
 			break
 		r -= 1
 	max_k += 1
-	print('vertical score', k+1)
-	print('play score:', max_k)
+	# print('vertical score', k+1)
+	# print('play score:', max_k)
 	add_score(max_k, player, piece)
 	return max_k
 
@@ -143,22 +144,35 @@ def add_score(score, player, piece):
 		else:
 			PLAYER_2_SCORE += score
 			PLAYER_1_SCORE -= score
-	print('player1 total score: ', PLAYER_1_SCORE)
-	print('player2 total score: ', PLAYER_2_SCORE)
+	# print('player1 total score: ', PLAYER_1_SCORE)
+	# print('player2 total score: ', PLAYER_2_SCORE)
 
 
 def drop_piece(board, row, col, piece):
 	board[row][col] = piece
 
 def is_valid_location(board, col):
+	if col == 0:
+		print('column zero validation: ', board[0][col] != 0)
 	return board[0][col] != 0
 
+def is_valid_location_fill(board, col):
+	return board[ROW_COUNT-1][col] == 0
+
 def get_next_open_row(board, col):
-	row = ROW_COUNT
+	row = ROW_COUNT-1
 	while row >= 0:
 		if board[row][col] != 0:
 			return row
-	row -= 1
+		row -= 1
+	print('none at column', col)
+	print_board(board)
+	return 'dafuq'
+
+def get_next_open_row_fill(board, col):
+	for r in range(ROW_COUNT):
+		if board[r][col] == 0:
+			return r
 
 def print_board(board):
 	print(np.flip(board, 0))
@@ -248,24 +262,29 @@ def take_piece(board, col, player):
 	row = ROW_COUNT -1
 	piece = 0
 	while row >= 0:
+		# print('board at location:', board[row][col])
 		if board[row][col] != 0:
 			piece = int(board[row][col])
 			board[row][col] = 0
-			print('removed piece', piece ,'from', row, col)
+			# print('removed piece', piece ,'from', row, col)
 			# TODO calculate score here, using (player, piece, row, col). That is all information needed for score
 			calculate_score(board, row, col, piece, player)
 			break
 		row -= 1
 
 def minimax(board, depth, alpha, beta, maximizingPlayer, piece, column):
+	# print('current depth:', depth)
 	valid_locations = get_valid_locations(board)
+	if get_next_open_row(board, column) == 'dafuq':
+		print('valid locations: ', valid_locations)
 	is_terminal = is_terminal_node(board)
 	if maximizingPlayer:
 		player = 2
 	else:
 		player = 1
-	if depth < ROW_COUNT or is_terminal:
-		return (None, calculate_score(board, get_piece(board, column), column, piece, player))
+	if depth >= ROW_COUNT or is_terminal:
+		# print('minimax ended')
+		return (None, calculate_score(board, get_next_open_row(board, column), column, piece, player))
 	if maximizingPlayer:
 		value = -math.inf
 		column = random.choice(valid_locations)
@@ -273,14 +292,14 @@ def minimax(board, depth, alpha, beta, maximizingPlayer, piece, column):
 			# row = get_next_open_row(board, col)
 			b_copy = board.copy()
 			take_piece(b_copy,col,player)
-			new_score = minimax(b_copy, depth+1, alpha, beta, False, piece, column)[1]
+			new_score = minimax(b_copy, depth+1, alpha, beta, False, piece, col)[1]
 			if new_score > value:
 				value = new_score
 				column = col
 			alpha = max(alpha, value)
 			if alpha >= beta:
 				break
-		print('maxinmizing score:', column, value)
+		# print('maxinmizing score:', column, value)
 		return column, value
 
 	else: # Minimizing player
@@ -290,22 +309,22 @@ def minimax(board, depth, alpha, beta, maximizingPlayer, piece, column):
 			# row = get_next_open_row(board, col)
 			b_copy = board.copy()
 			take_piece(b_copy,col,player)
-			new_score = minimax(b_copy, depth+1, alpha, beta, True, piece, column)[1]
+			new_score = minimax(b_copy, depth+1, alpha, beta, True, piece, col)[1]
 			if new_score < value:
 				value = new_score
 				column = col
 			beta = min(beta, value)
 			if alpha >= beta:
 				break
-		print('minimizing score:', column, value)
+		# print('minimizing score:', column, value)
 		return column, value
 
 def get_piece(board, col):
-	row = ROW_COUNT
+	row = ROW_COUNT - 1
 	while row >= 0:
 		if board[row][col] != 0:
 			return int(board[row][col])
-	row -= 1
+		row -= 1
 
 
 def get_valid_locations(board):
@@ -355,14 +374,15 @@ def fill_board(board):
 	while pieces != board_size:	
 		turn += 1
 		col = randint(0,COLUMN_COUNT-1)
-		if is_valid_location(board, col):
-			row = get_next_open_row(board, col)
+		if is_valid_location_fill(board, col):
+			row = get_next_open_row_fill(board, col)
 			drop_piece(board, row, col, turn)
 			pieces += 1
 		turn -= 1
 		turn += 1
 		turn = turn % 2
 fill_board(board)
+print_board(board)
 
 pygame.init()
 
@@ -405,44 +425,45 @@ while not game_over:
 				posx = event.pos[0]
 				col = int(math.floor(posx/SQUARESIZE))
 
-				if is_valid_location(board, col):
-					# row = get_next_open_row(board, col)
-					take_piece(board, col, 1)
+				# if is_valid_location(board, col):
+				# row = get_next_open_row(board, col)
+				take_piece(board, col, 1)
 
-					# if winning_move(board, PLAYER_PIECE):
-					# 	label = myfont.render("Player 1 wins!!", 1, RED)
-					# 	screen.blit(label, (40,10))
-					# 	game_over = True
+				# if winning_move(board, PLAYER_PIECE):
+				# 	label = myfont.render("Player 1 wins!!", 1, RED)
+				# 	screen.blit(label, (40,10))
+				# 	game_over = True
 
-					turn += 1
-					turn = turn % 2
+				turn += 1
+				turn = turn % 2
 
-					print_board(board)
-					draw_board(board)
+				print_board(board)
+				draw_board(board)
 
 
 	# # Ask for Player 2 Input
 	if turn == AI and not game_over:				
 
-		column = random.randint(0, COLUMN_COUNT-1)
+		column = random.choice(get_valid_locations(board))
+		print('AI chose to start with column', column)
 		#col = pick_best_move(board, AI_PIECE)
 		col, minimax_score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column)
+		print('max score at:', col, ' score: ', minimax_score)
+		# if is_valid_location(board, col):
+		#pygame.time.wait(500)
+		# row = get_next_open_row(board, col)
+		take_piece(board, col, 1)
 
-		if is_valid_location(board, col):
-			#pygame.time.wait(500)
-			# row = get_next_open_row(board, col)
-			take_piece(board, col, 1)
+		# if winning_move(board, AI_PIECE):
+		# 	label = myfont.render("Player 2 wins!!", 1, YELLOW)
+		# 	screen.blit(label, (40,10))
+		# 	game_over = True
 
-			# if winning_move(board, AI_PIECE):
-			# 	label = myfont.render("Player 2 wins!!", 1, YELLOW)
-			# 	screen.blit(label, (40,10))
-			# 	game_over = True
+		print_board(board)
+		draw_board(board)
 
-			print_board(board)
-			draw_board(board)
-
-			turn += 1
-			turn = turn % 2
+		turn += 1
+		turn = turn % 2
 
 	if game_over:
 		pygame.time.wait(3000)
