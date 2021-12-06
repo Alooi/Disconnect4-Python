@@ -29,6 +29,7 @@ def create_board():
 	board = np.zeros((ROW_COUNT,COLUMN_COUNT))
 	return board
 
+# calculates the score of a certain play defined by the row and column
 def calculate_score(board, row, col, piece, player):
 	print('checking column: ', col)
 	c, r = col+1, row+1
@@ -129,6 +130,7 @@ def calculate_score(board, row, col, piece, player):
 	# add_score(max_k, player, piece)
 	return max_k
 
+# adds the score to the player specified the piece has to be specified too. 
 def add_score(score, player, piece):
 	global PLAYER_1_SCORE
 	global PLAYER_2_SCORE
@@ -150,18 +152,21 @@ def add_score(score, player, piece):
 	# print('player1 total score: ', PLAYER_1_SCORE)
 	# print('player2 total score: ', PLAYER_2_SCORE)
 
-
+# only used in the fill_board method to initialize the board
 def drop_piece(board, row, col, piece):
 	board[row][col] = piece
 
+# checks if the the column is not empty
 def is_valid_location(board, col):
 	# if col == 0:
 	# 	print('column zero validation: ', board[0][col] != 0)
 	return board[0][col] != 0
 
+# used in the fill_board function, does the opposite of the function above
 def is_valid_location_fill(board, col):
 	return board[ROW_COUNT-1][col] == 0
 
+# finds the top piece in a row
 def get_next_open_row(board, col):
 	row = ROW_COUNT-1
 	while row >= 0:
@@ -172,6 +177,7 @@ def get_next_open_row(board, col):
 	# print_board(board)
 	return 'dafuq'
 
+# does the opposite of the function above, used in fill_board function only
 def get_next_open_row_fill(board, col):
 	for r in range(ROW_COUNT):
 		if board[r][col] == 0:
@@ -180,10 +186,11 @@ def get_next_open_row_fill(board, col):
 def print_board(board):
 	print(np.flip(board, 0))
 
-
+# checks of the board has no more piece to remove
 def is_terminal_node(board):
 	return len(get_valid_locations(board)) == 0
 
+# removes a piece from the specified column
 def take_piece(board, col, player):
 	row = ROW_COUNT -1
 	piece = 0
@@ -195,6 +202,7 @@ def take_piece(board, col, player):
 			# calculate_score(board, row, col, piece, player)
 			break
 		row -= 1
+
 
 def minimax(board, depth, alpha, beta, maximizingPlayer, piece, column):
 	# print('current depth:', depth)
@@ -249,6 +257,7 @@ def minimax(board, depth, alpha, beta, maximizingPlayer, piece, column):
 		# print('minimizing score:', column, value)
 		return column, value
 
+# returns the type of piece at the top of the column specified
 def get_piece(board, col):
 	row = ROW_COUNT - 1
 	while row >= 0:
@@ -256,7 +265,7 @@ def get_piece(board, col):
 			return int(board[row][col])
 		row -= 1
 
-
+# returns an array of none empty columns
 def get_valid_locations(board):
 	valid_locations = []
 	for col in range(COLUMN_COUNT):
@@ -264,6 +273,7 @@ def get_valid_locations(board):
 			valid_locations.append(col)
 	return valid_locations
 
+# greedy algorithm
 def pick_best_move(board, piece):
 	player = 2
 	valid_locations = get_valid_locations(board)
@@ -297,6 +307,8 @@ def draw_board(board):
 board = create_board()
 # print_board(board)
 game_over = False
+
+# called at the start of each run to initialize the board randomly
 def fill_board(board):
 	turn = 0
 	pieces = 0
@@ -314,6 +326,7 @@ def fill_board(board):
 fill_board(board)
 # print_board(board)
 
+## -- you can ignore this section of the code --
 pygame.init()
 
 SQUARESIZE = 100
@@ -333,61 +346,16 @@ myfont = pygame.font.SysFont("monospace", 75)
 
 turn = random.randint(PLAYER, AI)
 
+## --------------------------------------------
+
 while not game_over:
-
-	# for event in pygame.event.get():
-	# 	if event.type == pygame.QUIT:
-	# 		sys.exit()
-
-	# 	if event.type == pygame.MOUSEMOTION:
-	# 		pygame.draw.rect(screen, BLACK, (0,0, width, SQUARESIZE))
-	# 		posx = event.pos[0]
-	# 		if turn == PLAYER:
-	# 			pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE/2)), RADIUS)
-
-	# 	pygame.display.update()
-
-	# 	if event.type == pygame.MOUSEBUTTONDOWN:
-	# 		pygame.draw.rect(screen, BLACK, (0,0, width, SQUARESIZE))
-	# 		#print(event.pos)
-	# 		# Ask for Player 1 Input
-	# 		if turn == PLAYER:
-	# 			posx = event.pos[0]
-	# 			# col = int(math.floor(posx/SQUARESIZE))
-	# 			col, score = pick_best_move(board, AI_PIECE)
-
-	# 			if is_valid_location(board, col):
-	# 				# row = get_next_open_row(board, col)
-	# 				# score = calculate_score(board, get_next_open_row(board, col), col, get_piece(board, col), PLAYER_PIECE)
-	# 				add_score(score, PLAYER_PIECE, get_piece(board, col))
-	# 				take_piece(board, col, 1)
-
-	# 				# if winning_move(board, PLAYER_PIECE):
-	# 				# 	label = myfont.render("Player 1 wins!!", 1, RED)
-	# 				# 	screen.blit(label, (40,10))
-	# 				# 	game_over = True
-	# 				if(is_terminal_node(board)):
-	# 					if (PLAYER_1_SCORE > PLAYER_2_SCORE):
-	# 						label = myfont.render("Player 1 wins!!", 1, RED)
-	# 						screen.blit(label, (40,10))
-	# 						game_over = True
-	# 					else:
-	# 						label = myfont.render("Player 2 wins!!", 1, RED)
-	# 						screen.blit(label, (40,10))
-	# 						game_over = True
-
-	# 				turn += 1
-	# 				turn = turn % 2
-
-	# 				# print_board(board)
-	# 				draw_board(board)
 
 	if turn == PLAYER and not game_over:				
 
-		col = random.choice(get_valid_locations(board))
-		print('AI chose to start with column', column)
-		# col, score = pick_best_move(board, AI_PIECE)
-		# col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column)
+		col = random.choice(get_valid_locations(board)) # random choice
+		# print('AI chose to start with column', column)
+		# col, score = pick_best_move(board, AI_PIECE)  # greedy
+		# col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column) # minimix
 		print('max score at:', col, ' score: ', score)
 		# if is_valid_location(board, col):
 		#pygame.time.wait(500)
@@ -419,8 +387,8 @@ while not game_over:
 
 		column = random.choice(get_valid_locations(board))
 		print('AI chose to start with column', column)
-		# col, score = pick_best_move(board, AI_PIECE)
-		col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column)
+		# col, score = pick_best_move(board, AI_PIECE) # greedy
+		col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column) # minimix
 		print('max score at:', col, ' score: ', score)
 		# if is_valid_location(board, col):
 		#pygame.time.wait(500)
