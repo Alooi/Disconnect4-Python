@@ -31,7 +31,7 @@ def create_board():
 
 # calculates the score of a certain play defined by the row and column
 def calculate_score(board, row, col, piece, player):
-	print('checking column: ', col)
+	# print('checking column: ', col)
 	c, r = col+1, row+1
 	max_k = 0
 	k = 0
@@ -208,7 +208,7 @@ def minimax(board, depth, alpha, beta, maximizingPlayer, piece, column):
 	# print('current depth:', depth)
 	valid_locations = get_valid_locations(board)
 	if get_next_open_row(board, column) == 'dafuq':
-		print('we hit rock bottom at column: ', column)
+		# print('we hit rock bottom at column: ', column)
 		return (None, 0)
 	is_terminal = is_terminal_node(board)
 	if maximizingPlayer:
@@ -287,7 +287,7 @@ def pick_best_move(board, piece):
 		if score > best_score:
 			best_score = score
 			best_col = col
-	print('best score:', best_score, 'at column: ', best_col, 'piece taken out: ', get_piece(board, best_col))
+	# print('best score:', best_score, 'at column: ', best_col, 'piece taken out: ', get_piece(board, best_col))
 	return best_col, best_score
 
 def draw_board(board):
@@ -323,99 +323,112 @@ def fill_board(board):
 		turn -= 1
 		turn += 1
 		turn = turn % 2
-fill_board(board)
-# print_board(board)
+greedywins = 0
+minimaxwins = 0
+plays = 0
+while plays < 10:
+	fill_board(board)
+	# print_board(board)
 
-## -- you can ignore this section of the code --
-pygame.init()
+	## -- you can ignore this section of the code --
+	pygame.init()
 
-SQUARESIZE = 100
+	SQUARESIZE = 100
 
-width = COLUMN_COUNT * SQUARESIZE
-height = (ROW_COUNT+1) * SQUARESIZE
+	width = COLUMN_COUNT * SQUARESIZE
+	height = (ROW_COUNT+1) * SQUARESIZE
 
-size = (width, height)
+	size = (width, height)
 
-RADIUS = int(SQUARESIZE/2 - 5)
+	RADIUS = int(SQUARESIZE/2 - 5)
 
-screen = pygame.display.set_mode(size)
-draw_board(board)
-pygame.display.update()
+	screen = pygame.display.set_mode(size)
+	draw_board(board)
+	pygame.display.update()
 
-myfont = pygame.font.SysFont("monospace", 75)
+	myfont = pygame.font.SysFont("monospace", 75)
 
-turn = random.randint(PLAYER, AI)
+	turn = random.randint(PLAYER, AI)
+	game_over = False
+	PLAYER_1_SCORE = 0
+	PLAYER_2_SCORE = 0
 
 ## --------------------------------------------
 
-while not game_over:
+	while not game_over:
 
-	if turn == PLAYER and not game_over:				
+		if turn == PLAYER and not game_over:				
 
-		col = random.choice(get_valid_locations(board)) # random choice
-		# print('AI chose to start with column', column)
-		# col, score = pick_best_move(board, AI_PIECE)  # greedy
-		# col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column) # minimix
-		print('max score at:', col, ' score: ', score)
-		# if is_valid_location(board, col):
-		#pygame.time.wait(500)
-		# row = get_next_open_row(board, col)
-		add_score(score, AI_PIECE, get_piece(board, col))
-		take_piece(board, col, 1)
+			# col = random.choice(get_valid_locations(board)) # random choice
+			# print('AI chose to start with column', column)
+			col, score = pick_best_move(board, AI_PIECE)  # greedy
+			# col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column) # minimix
+			# print('max score at:', col, ' score: ', score)
+			# if is_valid_location(board, col):
+			#pygame.time.wait(500)
+			# row = get_next_open_row(board, col)
+			add_score(score, AI_PIECE, get_piece(board, col))
+			take_piece(board, col, 1)
 
-		# if winning_move(board, AI_PIECE):
-		# 	label = myfont.render("Player 2 wins!!", 1, YELLOW)
-		# 	screen.blit(label, (40,10))
-		# 	game_over = True
-		if(is_terminal_node(board)):
-			if (PLAYER_1_SCORE > PLAYER_2_SCORE):
-				label = myfont.render("Player 1 wins!!", 1, RED)
-				screen.blit(label, (40,10))
-				game_over = True
-			else:
-				label = myfont.render("Player 2 wins!!", 1, RED)
-				screen.blit(label, (40,10))
-				game_over = True
+			# if winning_move(board, AI_PIECE):
+			# 	label = myfont.render("Player 2 wins!!", 1, YELLOW)
+			# 	screen.blit(label, (40,10))
+			# 	game_over = True
+			if(is_terminal_node(board)):
+				if (PLAYER_1_SCORE > PLAYER_2_SCORE):
+					label = myfont.render("Player 1 wins!!", 1, RED)
+					screen.blit(label, (40,10))
+					greedywins += 1
+					game_over = True
+				else:
+					label = myfont.render("Player 2 wins!!", 1, RED)
+					screen.blit(label, (40,10))
+					minimaxwins += 1
+					game_over = True
 
-		# print_board(board)
-		draw_board(board)
+			# print_board(board)
+			draw_board(board)
 
-		turn += 1
-		turn = turn % 2
-	# # Ask for Player 2 Input
-	elif turn == AI and not game_over:				
+			turn += 1
+			turn = turn % 2
+		# # Ask for Player 2 Input
+		elif turn == AI and not game_over:				
 
-		column = random.choice(get_valid_locations(board))
-		print('AI chose to start with column', column)
-		# col, score = pick_best_move(board, AI_PIECE) # greedy
-		col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column) # minimix
-		print('max score at:', col, ' score: ', score)
-		# if is_valid_location(board, col):
-		#pygame.time.wait(500)
-		# row = get_next_open_row(board, col)
-		add_score(score, AI_PIECE, get_piece(board, col))
-		take_piece(board, col, 1)
+			column = random.choice(get_valid_locations(board))
+			# print('AI chose to start with column', column)
+			# col, score = pick_best_move(board, AI_PIECE) # greedy
+			col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column) # minimix
+			# print('max score at:', col, ' score: ', score)
+			# if is_valid_location(board, col):
+			#pygame.time.wait(500)
+			# row = get_next_open_row(board, col)
+			add_score(score, AI_PIECE, get_piece(board, col))
+			take_piece(board, col, 1)
 
-		# if winning_move(board, AI_PIECE):
-		# 	label = myfont.render("Player 2 wins!!", 1, YELLOW)
-		# 	screen.blit(label, (40,10))
-		# 	game_over = True
-		if(is_terminal_node(board)):
-			if (PLAYER_1_SCORE > PLAYER_2_SCORE):
-				label = myfont.render("Player 1 wins!!", 1, RED)
-				screen.blit(label, (40,10))
-				game_over = True
-			else:
-				label = myfont.render("Player 2 wins!!", 1, RED)
-				screen.blit(label, (40,10))
-				game_over = True
+			# if winning_move(board, AI_PIECE):
+			# 	label = myfont.render("Player 2 wins!!", 1, YELLOW)
+			# 	screen.blit(label, (40,10))
+			# 	game_over = True
+			if(is_terminal_node(board)):
+				if (PLAYER_1_SCORE > PLAYER_2_SCORE):
+					label = myfont.render("Player 1 wins!!", 1, RED)
+					screen.blit(label, (40,10))
+					greedywins += 1
+					game_over = True
+				else:
+					label = myfont.render("Player 2 wins!!", 1, RED)
+					screen.blit(label, (40,10))
+					minimaxwins += 1
+					game_over = True
 
-		# print_board(board)
-		draw_board(board)
+			# print_board(board)
+			draw_board(board)
 
-		turn += 1
-		turn = turn % 2
+			turn += 1
+			turn = turn % 2
 
-	if game_over:
-		print('player 1 score: ', PLAYER_1_SCORE, 'player 2 score: ', PLAYER_2_SCORE)
-		pygame.time.wait(3000)
+		if game_over:
+			print('greedy score: ', PLAYER_1_SCORE, 'minimax score: ', PLAYER_2_SCORE)
+			# pygame.time.wait(3000)
+	plays += 1
+print('greedy vs minimax: ', greedywins, '|', minimaxwins)
