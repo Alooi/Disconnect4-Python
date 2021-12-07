@@ -4,13 +4,15 @@ import pygame
 import sys
 import math
 from random import randint
+import time
+import matplotlib.pyplot as plt
 
 BLUE = (0,0,255)
 BLACK = (0,0,0)
 RED = (255,0,0)
 YELLOW = (255,255,0)
 
-ROW_COUNT = 6
+ROW_COUNT = 12
 COLUMN_COUNT = 7
 
 PLAYER = 0
@@ -326,7 +328,7 @@ def fill_board(board):
 greedywins = 0
 minimaxwins = 0
 plays = 0
-while plays < 10:
+while plays < 1:
 	fill_board(board)
 	# print_board(board)
 
@@ -352,6 +354,8 @@ while plays < 10:
 	game_over = False
 	PLAYER_1_SCORE = 0
 	PLAYER_2_SCORE = 0
+	time_list = []
+	longest_time = 0
 
 ## --------------------------------------------
 
@@ -359,9 +363,9 @@ while plays < 10:
 
 		if turn == PLAYER and not game_over:				
 
-			# col = random.choice(get_valid_locations(board)) # random choice
+			col = random.choice(get_valid_locations(board)) # random choice
 			# print('AI chose to start with column', column)
-			col, score = pick_best_move(board, AI_PIECE)  # greedy
+			# col, score = pick_best_move(board, AI_PIECE)  # greedy
 			# col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column) # minimix
 			# print('max score at:', col, ' score: ', score)
 			# if is_valid_location(board, col):
@@ -397,7 +401,12 @@ while plays < 10:
 			column = random.choice(get_valid_locations(board))
 			# print('AI chose to start with column', column)
 			# col, score = pick_best_move(board, AI_PIECE) # greedy
+			start_time = time.time()
 			col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column) # minimix
+			time_taken = time.time() - start_time
+			if time_taken > longest_time:
+				longest_time = time_taken
+			time_list.append(time_taken)
 			# print('max score at:', col, ' score: ', score)
 			# if is_valid_location(board, col):
 			#pygame.time.wait(500)
@@ -431,4 +440,17 @@ while plays < 10:
 			print('greedy score: ', PLAYER_1_SCORE, 'minimax score: ', PLAYER_2_SCORE)
 			# pygame.time.wait(3000)
 	plays += 1
-print('greedy vs minimax: ', greedywins, '|', minimaxwins)
+# print('greedy vs minimax: ', greedywins, '|', minimaxwins)
+print('time taken for each move: ')
+print(time_list)
+num_plays = []
+c = 0
+while c < len(time_list):
+	num_plays.append(c+1)
+	c += 1
+
+plt.plot(num_plays, time_list, 'b')
+plt.xlabel('turns')
+plt.ylabel('time (s)')
+plt.title('single play Complexity')
+plt.show()
