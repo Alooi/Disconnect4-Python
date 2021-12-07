@@ -12,7 +12,7 @@ BLACK = (0,0,0)
 RED = (255,0,0)
 YELLOW = (255,255,0)
 
-ROW_COUNT = 6
+ROW_COUNT = 10
 COLUMN_COUNT = 7
 
 PLAYER = 0
@@ -331,7 +331,7 @@ plays = 0
 longest_time = 0
 average_times = []
 n_sizes = []
-while plays < 12:
+while plays < 1:
 	board = create_board()
 	fill_board(board)
 	# print_board(board)
@@ -405,16 +405,16 @@ while plays < 12:
 		elif turn == AI and not game_over:				
 
 			
-			start_time = time.time()
-			col, score = pick_best_move(board, AI_PIECE) # greedy
-			time_taken = time.time() - start_time
-			if time_taken: time_list.append(time_taken)
-
-			# column = random.choice(get_valid_locations(board))
 			# start_time = time.time()
-			# col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column) # minimix
+			# col, score = pick_best_move(board, AI_PIECE) # greedy
 			# time_taken = time.time() - start_time
 			# if time_taken: time_list.append(time_taken)
+
+			column = random.choice(get_valid_locations(board))
+			start_time = time.time()
+			col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column) # minimix
+			time_taken = time.time() - start_time
+			if time_taken: time_list.append(time_taken)
 
 			if time_taken > longest_time:
 				longest_time = time_taken
@@ -478,15 +478,15 @@ while plays < 12:
 # print('greedy vs minimax: ', greedywins, '|', minimaxwins)
 # print('time taken for each move: ')
 # print(time_list)
-print('longest time: ', average_times)
+print('longest time: ', time_list)
 num_plays = []
 c = 0
-while c < len(average_times):
+while c < len(time_list):
 	num_plays.append(c+1)
 	c += 1
 
-plt.plot(n_sizes, average_times, 'b')
-plt.xlabel('input N')
+plt.plot(num_plays, time_list, 'b')
+plt.xlabel('turn number')
 plt.ylabel('time (ms)')
-plt.title('Time vs input N Graph')
+plt.title('Time vs turn number Graph')
 plt.show()
