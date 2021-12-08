@@ -110,7 +110,7 @@ def calculate_score(board, row, col, piece, player):
 	#check vertical 
 	c, r = col, row-1
 	k = 0
-	while r < ROW_COUNT:
+	while r > ROW_COUNT:
 		if board[r][c] == piece:
 			k += 1
 			if k > max_k:
