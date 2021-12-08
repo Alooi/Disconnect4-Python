@@ -385,10 +385,10 @@ while not game_over:
 	# # Ask for Player 2 Input
 	if turn == AI and not game_over:				
 
-		column = random.choice(get_valid_locations(board))
+		# column = random.choice(get_valid_locations(board))
 		# print('AI chose to start with column', column)
-		# col, score = pick_best_move(board, AI_PIECE)
-		col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column)
+		col, score = pick_best_move(board, AI_PIECE)
+		# col, score = minimax(board, 0, -math.inf, math.inf, True, get_piece(board, column), column)
 		# print('max score at:', col, ' score: ', score)
 		# if is_valid_location(board, col):
 		#pygame.time.wait(500)
